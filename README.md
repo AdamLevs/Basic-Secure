@@ -1,60 +1,106 @@
-# Simple-Secure
+Simple-Secure
+Introduction
+This guide will help you set up a secure server environment with firewall rules, monitoring tools, and automated scripts.
 
+1. Configure Firewall
+To enable the firewall, use the following command:
 
-well first of all we want to enable the FireWall we can do that in simple command: 
-Sudo ufw enable # be aware if you using remote or ssh it may disconnect you
-# to allow ssh (and im allowing more port for the next apps) use
-sudo ufw allow ssh 
+bash
+Copy code
+sudo ufw enable
+Note: Enabling the firewall may disconnect your remote SSH session.
+
+To allow SSH and additional ports for various applications, run:
+
+bash
+Copy code
+sudo ufw allow ssh
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 sudo ufw allow 9090/tcp
 sudo ufw allow 3000/tcp
 sudo ufw allow 9100/tcp
-# use the ufw allow for enable any port u use
-# u can even use sudo ufw limit ssh/tcp to limit the ssh 
+To allow any specific port, use:
 
-mv daily_maintenance.sh /usr/local/bin
+bash
+Copy code
+sudo ufw allow <port_number>
+To limit SSH access, you can use:
 
-dont forget to give the right premmissision:
+bash
+Copy code
+sudo ufw limit ssh/tcp
+2. Setup Daily Maintenance Script
+Move the daily maintenance script and set the correct permissions:
+
+bash
+Copy code
+sudo mv daily_maintenance.sh /usr/local/bin
 sudo chmod +x /usr/local/bin/daily_maintenance.sh
+To run this script automatically, configure a cron job:
 
-
-after that we want the script work automatically by using cron job:
+bash
+Copy code
 sudo crontab -e
-# add this line at the end of the file
-0 0 * * * /usr/local/bin/daily_maintenance.sh # right now it runinng evry day at 00:00, you can change that if you want to
+Add the following line to execute the script daily at midnight (00:00):
 
-# NOW LET START DOWNLOAD APPS THAT MAY HELP YOU
-first lets install aide:
- 
+bash
+Copy code
+0 0 * * * /usr/local/bin/daily_maintenance.sh
+3. Install Security Tools
+Install AIDE
+bash
+Copy code
 sudo apt install aide
 sudo aideinit
-
-now lets install rkhunter:
+Install RKHunter
+bash
+Copy code
 sudo apt install rkhunter
 sudo rkhunter --update
-# use the sudo rkhunter --check to check any logs
+Check logs with:
 
-# now lets install the libpam-pwquality tool to enforce strong password policies and regular password changes
+bash
+Copy code
+sudo rkhunter --check
+Install libpam-pwquality
+bash
+Copy code
 sudo apt install libpam-pwquality
-
-we can install ClamAV for antivirus app:
+Install ClamAV
+bash
+Copy code
 sudo apt install clamav clamav-daemon
+Check if the ClamAV service is running:
 
-# after install type sudo systemctl status clamav-freshclam to see if the service running, if not:
-sudo systemctl enable clamav-freshclam && sudo systemctl start clamav-freshclam
+bash
+Copy code
+sudo systemctl status clamav-freshclam
+If it's not running, enable and start the service:
 
-# to add more security layer we can also add the AppArmor:
-sudo apt install apparmor 
-
-
-The last thing we can do, is do add another monitoring app called Lynis:
+bash
+Copy code
+sudo systemctl enable clamav-freshclam
+sudo systemctl start clamav-freshclam
+Install AppArmor
+bash
+Copy code
+sudo apt install apparmor
+Install Lynis
+bash
+Copy code
 sudo apt install lynis
+Check your logs with:
 
-use the command: sudo lynis audit system to check your logs, but we can add this to automaticlly see it with the grafana dashboard by using prometheus 
+bash
+Copy code
+sudo lynis audit system
+4. Install Monitoring Tools
+Install Prometheus
+Download and set up Prometheus:
 
-
-first of all lets install prometheus: 
+bash
+Copy code
 cd /tmp
 wget https://github.com/prometheus/prometheus/releases/download/v2.43.0/prometheus-2.43.0.linux-amd64.tar.gz
 tar xvf prometheus-2.43.0.linux-amd64.tar.gz
@@ -64,76 +110,109 @@ sudo mkdir /etc/prometheus
 sudo mv prometheus-2.43.0.linux-amd64/prometheus.yml /etc/prometheus/
 sudo mv prometheus-2.43.0.linux-amd64/consoles /etc/prometheus/
 sudo mv prometheus-2.43.0.linux-amd64/console_libraries /etc/prometheus/
+Create a Prometheus service:
 
-# after that we want the prometheus be as serive just cp the prometheus.service to /etc/systemd/system/prometheus.service
+bash
+Copy code
+sudo cp prometheus.service /etc/systemd/system/prometheus.service
+Create a Prometheus user and set permissions:
 
-
-THEN Create Prometheus User and Set Permissions
+bash
+Copy code
 sudo useradd --no-create-home --shell /bin/false prometheus
 sudo chown prometheus:prometheus /usr/local/bin/prometheus
 sudo chown prometheus:prometheus /usr/local/bin/promtool
 sudo chown -R prometheus:prometheus /etc/prometheus
 sudo mkdir /var/lib/prometheus
 sudo chown prometheus:prometheus /var/lib/prometheus
+Start the Prometheus service:
 
-# after that we can start the promtheus service:
+bash
+Copy code
 sudo systemctl daemon-reload
 sudo systemctl start prometheus
 sudo systemctl enable prometheus
-# to check the status:
-sudo systemctl status prometheus
+Check the status:
 
-TO INSTALL GRAFANA: 
+bash
+Copy code
+sudo systemctl status prometheus
+Install Grafana
+bash
+Copy code
 sudo apt-get install -y software-properties-common
 sudo add-apt-repository "deb https://packages.grafana.com/oss/deb stable main"
 wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install grafana
+Start Grafana:
 
-# now tha we install we can start it by using: 
+bash
+Copy code
 sudo systemctl start grafana-server
 sudo systemctl enable grafana-server
-# check the status: 
+Check the status:
+
+bash
+Copy code
 sudo systemctl status grafana-server
-
-
-INSTALL NODE_EXPORTER:
+Install Node Exporter
+bash
+Copy code
 cd /tmp
 wget https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
 tar xvf node_exporter-1.5.0.linux-amd64.tar.gz
 sudo mv node_exporter-1.5.0.linux-amd64/node_exporter /usr/local/bin/
+Create a Node Exporter service:
 
+bash
+Copy code
+sudo cp node_exporter.service /etc/systemd/system
+Create a Node Exporter user and set permissions:
 
-for make the node a service just cp the node_exporter.service to /etc/systemd/system
-
-Create Node Exporter User and Set Permissions
-
+bash
+Copy code
 sudo useradd --no-create-home --shell /bin/false node_exporter
 sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
+Start the Node Exporter service:
 
-AFTER THAT WE WANT TO START THE SERVICE:
+bash
+Copy code
 sudo systemctl daemon-reload
 sudo systemctl start node_exporter
 sudo systemctl enable node_exporter
-# check the service: 
+Check the status:
+
+bash
+Copy code
 sudo systemctl status node_exporter
+Configure Prometheus
+Copy the Prometheus configuration file:
 
-after all that cp the prometheus.yaml to /etc/prometheus/prometheus.yml
-and restart the prometheus service by sudo systemctl restart prometheus
+bash
+Copy code
+sudo cp prometheus.yaml /etc/prometheus/prometheus.yml
+sudo systemctl restart prometheus
+Verify targets at http://localhost:9090. After setting up targets (Node Exporter and Lynis), access Grafana at http://localhost:3000. The default login is admin for both username and password, which you should change immediately. Add Prometheus as a data source and create dashboards as needed.
 
-not we can check in http://local_host:9090 if the targets are set.
-after seting the targets (node exporter and lynis) we can go to grafana web intarface, http://local_host:3000 # be aware that your first name and pss is admim, you can change it any time, after you loged in, add prometheus as data source and create dashboard as you like (in using the lynis and then i open other one in input 1860 to monitoring the system) 
+5. Schedule Lynis Checks
+Copy the Lynis hourly check script and set permissions:
 
+bash
+Copy code
+sudo cp lynis_hour.sh /usr/local/bin/lynis_hour.sh
+sudo chmod +x /usr/local/bin/lynis_hour.sh
+Configure a cron job to run the script every hour:
 
-now we want also the Lynis to be checked evry hour (or when ever you want)
+bash
+Copy code
+sudo crontab -e
+Add the following line:
 
-cp the lynis_hour.sh to /usr/local/bin/lynis_hour.sh
+bash
+Copy code
+0 * * * * /usr/local/bin/lynis_hour.sh
+Conclusion
+Your server is now more secure with monitoring and maintenance tools in place. Remember, while these steps enhance security, no system is entirely immune to threats. Regularly check for updates and best practices to maintain security.
 
-#dont forget to give it the right premmissision: 
-chmod +x /usr/local/bin/lynis_hour.sh
-
-and again go to: sudo crontab -e and just after the last line we added, add:
-0 * * * * /path/to/your/lynis_metrics_script.sh # it make the check evry hour, change it to any you like.
-
-
-and that's it, now your server more secure and you can see and handle the monitoring, be aware that you dont all the step it doesnt mean your server is 100% secire, there is allways an way to get hacked, check this repository some time to check new updates.
+Feel free to adjust any sections to fit your specific requirements or preferences.
