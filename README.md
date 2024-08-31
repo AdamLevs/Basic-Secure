@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 Simple-Secure
 Introduction
 This guide will help you set up a secure server environment with firewall rules, monitoring tools, and automated scripts.
@@ -8,21 +7,6 @@ To enable the firewall, use the following command:
 
 bash
 Copy code
-=======
-markdown
-Copy code
-# Simple-Secure
-
-## Introduction
-
-This guide will help you set up a secure server environment with firewall rules, monitoring tools, and automated scripts.
-
-## 1. Configure Firewall
-
-To enable the firewall, use the following command:
-
-```bash
->>>>>>> 0044f7f ( Changes to be committed:)
 sudo ufw enable
 Note: Enabling the firewall may disconnect your remote SSH session.
 
@@ -64,56 +48,45 @@ bash
 Copy code
 0 0 * * * /usr/local/bin/daily_maintenance.sh
 3. Install Security Tools
-Install AIDE
+Install AIDE:
+
 bash
 Copy code
 sudo apt install aide
 sudo aideinit
-Install RKHunter
+Install RKHunter:
+
 bash
 Copy code
 sudo apt install rkhunter
 sudo rkhunter --update
-Check logs with:
-
-bash
-Copy code
 sudo rkhunter --check
-Install libpam-pwquality
+Install libpam-pwquality:
+
 bash
 Copy code
 sudo apt install libpam-pwquality
-Install ClamAV
+Install ClamAV:
+
 bash
 Copy code
 sudo apt install clamav clamav-daemon
-Check if the ClamAV service is running:
-
-bash
-Copy code
 sudo systemctl status clamav-freshclam
-If it's not running, enable and start the service:
-
-bash
-Copy code
 sudo systemctl enable clamav-freshclam
 sudo systemctl start clamav-freshclam
-Install AppArmor
+Install AppArmor:
+
 bash
 Copy code
 sudo apt install apparmor
-Install Lynis
-bash
-Copy code
-sudo apt install lynis
-Check your logs with:
+Install Lynis:
 
 bash
 Copy code
+sudo apt install lynis
 sudo lynis audit system
 4. Install Monitoring Tools
-Install Prometheus
-Download and set up Prometheus:
+Install Prometheus:
 
 bash
 Copy code
@@ -148,12 +121,9 @@ Copy code
 sudo systemctl daemon-reload
 sudo systemctl start prometheus
 sudo systemctl enable prometheus
-Check the status:
-
-bash
-Copy code
 sudo systemctl status prometheus
-Install Grafana
+Install Grafana:
+
 bash
 Copy code
 sudo apt-get install -y software-properties-common
@@ -161,60 +131,25 @@ sudo add-apt-repository "deb https://packages.grafana.com/oss/deb stable main"
 wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install grafana
-Start Grafana:
-
-bash
-Copy code
 sudo systemctl start grafana-server
 sudo systemctl enable grafana-server
-Check the status:
-
-bash
-Copy code
 sudo systemctl status grafana-server
-Install Node Exporter
+Install Node Exporter:
+
 bash
 Copy code
 cd /tmp
 wget https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
 tar xvf node_exporter-1.5.0.linux-amd64.tar.gz
 sudo mv node_exporter-1.5.0.linux-amd64/node_exporter /usr/local/bin/
-Create a Node Exporter service:
-
-bash
-Copy code
 sudo cp node_exporter.service /etc/systemd/system
-Create a Node Exporter user and set permissions:
-
-bash
-Copy code
 sudo useradd --no-create-home --shell /bin/false node_exporter
 sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
-Start the Node Exporter service:
-
-bash
-Copy code
 sudo systemctl daemon-reload
 sudo systemctl start node_exporter
 sudo systemctl enable node_exporter
-Check the status:
-
-bash
-Copy code
 sudo systemctl status node_exporter
-Configure Prometheus
-Copy the Prometheus configuration file:
-<<<<<<< HEAD
-
-bash
-Copy code
-sudo cp prometheus.yaml /etc/prometheus/prometheus.yml
-sudo systemctl restart prometheus
-Verify targets at http://localhost:9090. After setting up targets (Node Exporter and Lynis), access Grafana at http://localhost:3000. The default login is admin for both username and password, which you should change immediately. Add Prometheus as a data source and create dashboards as needed.
-
-5. Schedule Lynis Checks
-Copy the Lynis hourly check script and set permissions:
-=======
+Configure Prometheus:
 
 bash
 Copy code
@@ -242,35 +177,4 @@ Copy code
 Conclusion
 Your server is now more secure with monitoring and maintenance tools in place. Remember, while these steps enhance security, no system is entirely immune to threats. Regularly check for updates and best practices to maintain security.
 
-typescript
-Copy code
-
-Save this content in your `README.md` file. If you have any other questions or need further assistance, feel free to ask!
-
-
-
->>>>>>> 0044f7f ( Changes to be committed:)
-
-bash
-Copy code
-sudo cp lynis_hour.sh /usr/local/bin/lynis_hour.sh
-sudo chmod +x /usr/local/bin/lynis_hour.sh
-Configure a cron job to run the script every hour:
-
-<<<<<<< HEAD
-bash
-Copy code
-sudo crontab -e
-Add the following line:
-
-bash
-Copy code
-0 * * * * /usr/local/bin/lynis_hour.sh
-Conclusion
-Your server is now more secure with monitoring and maintenance tools in place. Remember, while these steps enhance security, no system is entirely immune to threats. Regularly check for updates and best practices to maintain security.
-
-Feel free to adjust any sections to fit your specific requirements or preferences.
-=======
-
-
->>>>>>> 0044f7f ( Changes to be committed:)
+This cleaned-up version resolves all conflict markers and retains all the useful information.
