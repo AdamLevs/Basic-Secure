@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Simple-Secure
 Introduction
 This guide will help you set up a secure server environment with firewall rules, monitoring tools, and automated scripts.
@@ -7,6 +8,21 @@ To enable the firewall, use the following command:
 
 bash
 Copy code
+=======
+markdown
+Copy code
+# Simple-Secure
+
+## Introduction
+
+This guide will help you set up a secure server environment with firewall rules, monitoring tools, and automated scripts.
+
+## 1. Configure Firewall
+
+To enable the firewall, use the following command:
+
+```bash
+>>>>>>> 0044f7f ( Changes to be committed:)
 sudo ufw enable
 Note: Enabling the firewall may disconnect your remote SSH session.
 
@@ -188,6 +204,17 @@ Copy code
 sudo systemctl status node_exporter
 Configure Prometheus
 Copy the Prometheus configuration file:
+<<<<<<< HEAD
+
+bash
+Copy code
+sudo cp prometheus.yaml /etc/prometheus/prometheus.yml
+sudo systemctl restart prometheus
+Verify targets at http://localhost:9090. After setting up targets (Node Exporter and Lynis), access Grafana at http://localhost:3000. The default login is admin for both username and password, which you should change immediately. Add Prometheus as a data source and create dashboards as needed.
+
+5. Schedule Lynis Checks
+Copy the Lynis hourly check script and set permissions:
+=======
 
 bash
 Copy code
@@ -215,4 +242,35 @@ Copy code
 Conclusion
 Your server is now more secure with monitoring and maintenance tools in place. Remember, while these steps enhance security, no system is entirely immune to threats. Regularly check for updates and best practices to maintain security.
 
+typescript
+Copy code
+
+Save this content in your `README.md` file. If you have any other questions or need further assistance, feel free to ask!
+
+
+
+>>>>>>> 0044f7f ( Changes to be committed:)
+
+bash
+Copy code
+sudo cp lynis_hour.sh /usr/local/bin/lynis_hour.sh
+sudo chmod +x /usr/local/bin/lynis_hour.sh
+Configure a cron job to run the script every hour:
+
+<<<<<<< HEAD
+bash
+Copy code
+sudo crontab -e
+Add the following line:
+
+bash
+Copy code
+0 * * * * /usr/local/bin/lynis_hour.sh
+Conclusion
+Your server is now more secure with monitoring and maintenance tools in place. Remember, while these steps enhance security, no system is entirely immune to threats. Regularly check for updates and best practices to maintain security.
+
 Feel free to adjust any sections to fit your specific requirements or preferences.
+=======
+
+
+>>>>>>> 0044f7f ( Changes to be committed:)
