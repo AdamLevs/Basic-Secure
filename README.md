@@ -34,40 +34,11 @@ UFW (Uncomplicated Firewall) is a user-friendly interface for managing iptables.
 
 ## 2. Setup Daily Maintenance Script
 
-Create a script to perform daily maintenance tasks:
+To set up a script for daily maintenance tasks:
 
-- Create the script:
+- Move the existing script to the correct directory:
   ```bash
-  sudo nano /usr/local/bin/daily_maintenance.sh
-  ```
-
-- Add the following content:
-  ```bash
-  #!/bin/bash
-  
-  # Update package list
-  apt update
-  
-  # Upgrade packages
-  apt upgrade -y
-  
-  # Remove unnecessary packages
-  apt autoremove -y
-  
-  # Clean apt cache
-  apt clean
-  
-  # Update ClamAV virus definitions
-  freshclam
-  
-  # Run a quick system scan with ClamAV
-  clamscan -r /home
-  
-  # Update rkhunter database
-  rkhunter --update
-  
-  # Run rkhunter check
-  rkhunter --check --skip-keypress
+  sudo mv daily_maintenance.sh /usr/local/bin/
   ```
 
 - Set proper permissions:
@@ -75,15 +46,16 @@ Create a script to perform daily maintenance tasks:
   sudo chmod +x /usr/local/bin/daily_maintenance.sh
   ```
 
-- Configure cron job to run daily:
+- Configure a cron job to run the script daily:
   ```bash
   sudo crontab -e
   ```
-  Add the following line:
+  Add the following line to run the script every day at 2:00 AM:
   ```
   0 2 * * * /usr/local/bin/daily_maintenance.sh
   ```
-  This will run the script every day at 2:00 AM.
+
+This script should include tasks such as updating packages, cleaning up unnecessary files, updating virus definitions, and running security scans. Ensure that the script contains all necessary maintenance tasks for your specific server setup.
 
 ## 3. Install Security Tools
 
@@ -155,48 +127,39 @@ sudo lynis audit system
 
 ### Prometheus
 
-Prometheus is a monitoring system and time series database:
+Prometheus is a monitoring system and time series database. To set it up:
 
-```bash
-wget https://github.com/prometheus/prometheus/releases/download/v2.37.0/prometheus-2.37.0.linux-amd64.tar.gz
-tar xvf prometheus-2.37.0.linux-amd64.tar.gz
-sudo mv prometheus-2.37.0.linux-amd64 /opt/prometheus
-sudo useradd --no-create-home --shell /bin/false prometheus
-sudo chown -R prometheus:prometheus /opt/prometheus
-```
+1. Download and extract Prometheus:
+   ```bash
+   wget https://github.com/prometheus/prometheus/releases/download/v2.37.0/prometheus-2.37.0.linux-amd64.tar.gz
+   tar xvf prometheus-2.37.0.linux-amd64.tar.gz
+   sudo mv prometheus-2.37.0.linux-amd64 /opt/prometheus
+   ```
 
-Create a systemd service file:
-```bash
-sudo nano /etc/systemd/system/prometheus.service
-```
+2. Create a Prometheus user:
+   ```bash
+   sudo useradd --no-create-home --shell /bin/false prometheus
+   sudo chown -R prometheus:prometheus /opt/prometheus
+   ```
 
-Add the following content:
-```
-[Unit]
-Description=Prometheus
-Wants=network-online.target
-After=network-online.target
+3. Move the Prometheus service file to the correct location:
+   ```bash
+   sudo mv prometheus.service /etc/systemd/system/prometheus.service
+   ```
 
-[Service]
-User=prometheus
-Group=prometheus
-Type=simple
-ExecStart=/opt/prometheus/prometheus \
-    --config.file /opt/prometheus/prometheus.yml \
-    --storage.tsdb.path /opt/prometheus/data \
-    --web.console.templates=/opt/prometheus/consoles \
-    --web.console.libraries=/opt/prometheus/console_libraries
+4. Start Prometheus:
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl start prometheus
+   sudo systemctl enable prometheus
+   ```
 
-[Install]
-WantedBy=multi-user.target
-```
+5. Verify that Prometheus is running:
+   ```bash
+   sudo systemctl status prometheus
+   ```
 
-Start Prometheus:
-```bash
-sudo systemctl daemon-reload
-sudo systemctl start prometheus
-sudo systemctl enable prometheus
-```
+Ensure that the `prometheus.service` file contains the correct configuration for your setup, including the proper paths and any additional flags you may need.
 
 ### Grafana
 
@@ -214,54 +177,67 @@ sudo systemctl enable grafana-server
 
 ### Node Exporter
 
-Node Exporter provides hardware and OS metrics:
+Node Exporter provides hardware and OS metrics. To set it up:
 
-```bash
-wget https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
-tar xvf node_exporter-1.3.1.linux-amd64.tar.gz
-sudo mv node_exporter-1.3.1.linux-amd64/node_exporter /usr/local/bin/
-sudo useradd --no-create-home --shell /bin/false node_exporter
-sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
-```
+1. Download and extract Node Exporter:
+   ```bash
+   wget https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
+   tar xvf node_exporter-1.3.1.linux-amd64.tar.gz
+   sudo mv node_exporter-1.3.1.linux-amd64/node_exporter /usr/local/bin/
+   ```
 
-Create a systemd service file:
-```bash
-sudo nano /etc/systemd/system/node_exporter.service
-```
+2. Create a Node Exporter user:
+   ```bash
+   sudo useradd --no-create-home --shell /bin/false node_exporter
+   sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
+   ```
 
-Add the following content:
-```
-[Unit]
-Description=Node Exporter
-Wants=network-online.target
-After=network-online.target
+3. Move the Node Exporter service file to the correct location:
+   ```bash
+   sudo mv node_exporter.service /etc/systemd/system/node_exporter.service
+   ```
 
-[Service]
-User=node_exporter
-Group=node_exporter
-Type=simple
-ExecStart=/usr/local/bin/node_exporter
+4. Start Node Exporter:
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl start node_exporter
+   sudo systemctl enable node_exporter
+   ```
 
-[Install]
-WantedBy=multi-user.target
-```
+5. Verify that Node Exporter is running:
+   ```bash
+   sudo systemctl status node_exporter
+   ```
 
-Start Node Exporter:
-```bash
-sudo systemctl daemon-reload
-sudo systemctl start node_exporter
-sudo systemctl enable node_exporter
-```
+Ensure that the `node_exporter.service` file contains the correct configuration for your setup, including the proper user, group, and ExecStart path.
 
 ## 5. Schedule Regular Security Checks
 
-Create a script for hourly Lynis checks:
+To set up regular security checks using Lynis:
 
-```bash
-sudo nano /usr/local/bin/lynis_hourly_check.sh
-```
+1. Move the Lynis hourly check script to the correct location:
+   ```bash
+   sudo mv lynis_hour.sh /usr/local/bin/lynis_hour.sh
+   ```
 
-Add the following content:
+2. Set proper permissions:
+   ```bash
+   sudo chmod +x /usr/local/bin/lynis_hour.sh
+   ```
+
+3. Configure a cron job to run the script hourly:
+   ```bash
+   sudo crontab -e
+   ```
+   Add the following line:
+   ```
+   0 * * * * /usr/local/bin/lynis_hour.sh
+   ```
+
+This script will run Lynis hourly and log any warnings or suggestions. Ensure that the `lynis_hour.sh` script contains the necessary commands to run Lynis and process its output as required for your security monitoring needs.
+
+Alternatively, you can use the following script for more detailed hourly checks:
+
 ```bash
 #!/bin/bash
 
@@ -272,20 +248,6 @@ sudo lynis audit system --cronjob > /var/log/lynis_hourly.log 2>&1
 if grep -q "Warning:" /var/log/lynis_hourly.log || grep -q "Suggestion:" /var/log/lynis_hourly.log; then
     echo "Lynis found warnings or suggestions. Please check /var/log/lynis_hourly.log for details." | mail -s "Lynis Hourly Check Alert" root@localhost
 fi
-```
-
-Set proper permissions:
-```bash
-sudo chmod +x /usr/local/bin/lynis_hourly_check.sh
-```
-
-Configure cron job to run hourly:
-```bash
-sudo crontab -e
-```
-Add the following line:
-```
-0 * * * * /usr/local/bin/lynis_hourly_check.sh
 ```
 
 ## Conclusion
