@@ -1,4 +1,4 @@
-# Simple-Secure: Comprehensive Server Security Setup
+# Basic-Secure: Comprehensive Server Security Setup
 
 This guide provides detailed steps to set up a secure server environment with firewall rules, monitoring tools, and automated scripts.
 
