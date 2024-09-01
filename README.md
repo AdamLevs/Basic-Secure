@@ -257,10 +257,8 @@ Alternatively, you can use the following script for more detailed hourly checks:
 ```bash
 #!/bin/bash
 
-# Run Lynis audit
 sudo lynis audit system --cronjob > /var/log/lynis_hourly.log 2>&1
 
-# Check for specific strings in the log
 if grep -q "Warning:" /var/log/lynis_hourly.log || grep -q "Suggestion:" /var/log/lynis_hourly.log; then
     echo "Lynis found warnings or suggestions. Please check /var/log/lynis_hourly.log for details." | mail -s "Lynis Hourly Check Alert" root@localhost
 fi
