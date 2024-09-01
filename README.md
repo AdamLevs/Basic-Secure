@@ -2,6 +2,22 @@
 
 This guide provides detailed steps to set up a secure server environment with firewall rules, monitoring tools, and automated scripts.
 
+If you want to automate the entire process, you can use the `runsecure.sh` script. To do this, follow these steps:
+
+1. Give the script the correct permissions:
+   ```bash
+   chmod +x runsecure.sh
+   ```
+
+2. Run the script with sudo privileges:
+   ```bash
+   sudo ./runsecure.sh
+   ```
+
+This script will automate the setup process, guiding you through each step and applying the security measures outlined in this guide. Remember to review the script's actions and ensure they align with your specific server requirements before running it.
+
+For those who prefer a manual approach or want to understand each step, continue with the detailed guide below.
+
 ## 1. Configure Firewall
 
 UFW (Uncomplicated Firewall) is a user-friendly interface for managing iptables. Here's how to set it up:
