@@ -57,7 +57,6 @@ install_security_tools() {
     apt-get update
     apt-get install -y aide rkhunter libpam-pwquality clamav clamav-daemon apparmor apparmor-utils lynis
 
-    aideinit
     mv /var/lib/aide/aide.db.new /var/lib/aide/aide.db
 
     rkhunter --update
